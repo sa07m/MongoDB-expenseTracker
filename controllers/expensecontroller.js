@@ -40,7 +40,7 @@ exports.getExpense = async (req, res, next) => {
     const totalPages = Math.ceil(count / limit);
 
     const expenses = await Expense.find({ userId })
-            .sort({ createdAt: -1 })
+            .sort({ _id: -1 })
             .skip(offset)
             .limit(limit);
 

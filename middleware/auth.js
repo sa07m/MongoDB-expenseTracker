@@ -8,7 +8,7 @@ exports.authenticate = (req,res,next)=>{
         // console.log('tokenrcvd' , token);
         const user = jwt.verify(token ,process.env.TOKEN_SECRET );
         const userid = user.id;
-        console.log('user id : ', userid);
+        
         User.findById(userid).then(
             user=>{
 
