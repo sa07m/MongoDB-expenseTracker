@@ -5,79 +5,68 @@ const sequelize = require('../util/database')
 const path = require('path');
 
 exports.postExpense = async (req,res,next)=>{
-    const t = await sequelize.transaction()
+    
     try{
     console.log('in post expense controller')
     const userId = req.user.id ; 
-    const amount = req.body.amount;
-    const description = req.body.description;
-    const category = req.body.category;
-    const expense = await Expense.create({amount, description, category, userId},{transaction:t})
+    const {amount,description,category} = req.body;
+    const data = new Expense({amount, description, category, userId})
+    await data.save()
     const totalExpense = Number(req.user.totalexpenses) + Number(amount) ;
-    await User.update({totalexpenses : totalExpense } , {
-             where : { id : req.user.id},
-             transaction:t
-            })
-            t.commit()
+    await User.updateOne({ _id: userId }, { totalexpenses: totalExpense } )
+            
             console.log('commit')
             //console.log('in then',expense)
-            res.status(200).json(expense)       
+            res.status(200).json(data)       
     }
     
     catch(err){
         console.log(err);
-        t.rollback();
+      
         console.log('rollback')
         return res.status(500).json({success:false , error : err});
     };
 }
 
-exports.getExpense = (req, res, next) => {
-    
+exports.getExpense = async (req, res, next) => {
+    try{
     const limit = parseInt(req.query.limit) || 10;
     const currentPage = parseInt(req.query.page) || 1;
     const offset = (currentPage - 1) * limit;
+    const userId = req.user.id;
     
+    const count = await Expense.countDocuments({ userId });
 
-    Expense.findAndCountAll({
-        where: { userId: req.user.id },
-        order: [['createdAt', 'DESC']],
-        offset,
-        limit
-    })
-        .then( result => {
-            const totalItems = result.count;
-            const totalPages = Math.ceil(totalItems / limit);
+    const totalPages = Math.ceil(count / limit);
 
-            res.json({
-                expenses: result.rows,
-                totalPages,
-            });
-        })
-        .catch(err => console.log(err));
+    const expenses = await Expense.find({ userId })
+            .sort({ createdAt: -1 })
+            .skip(offset)
+            .limit(limit);
+
+        res.json({
+            expenses,
+            totalPages,
+        });
+    }
+    catch(err){
+        console.log(err)
+    } 
 }
 
 
 
 exports.deleteExpense = async (req, res, next) => {
-    const t = await sequelize.transaction()
+   
     try{
         const id = req.params.id        
         console.log('expense id params',id)
-        const expense = await Expense.findAll({
-            where:{
-                id:id,
-                userId:req.user.id               
-            },
-            transaction:t
-        })
-        const totalExpense = Number(req.user.totalexpenses) - Number(expense[0].amount) ;
-        await User.update({totalexpenses : totalExpense } , {
-            where : { id : req.user.id},
-            transaction:t
-           })
-           await expense[0].destroy();
-           t.commit()
+        const expense = await Expense.findOne({_id:id, userId:req.user.id})           
+        
+        const totalExpense = Number(req.user.totalexpenses) - Number(expense.amount) ;
+        await User.updateOne({ id : req.user.id},{totalexpenses : totalExpense })
+           await expense.deleteOne()
+          
            console.log('commit')
            //console.log('in then',expense)
            res.status(200).json(expense)   
@@ -86,9 +75,9 @@ exports.deleteExpense = async (req, res, next) => {
        
         console.log('entry deleted')
     }
-    catch(e){p
-        await t.rollback()
-        console.log('rollback')
+    catch(e){
+       
+        console.log('rollback del')
         console.log(e)
     }  
 }

@@ -117,7 +117,7 @@
 
         function display(obj) {
             console.log('in display')
-            const { userId, amount, description, category } = obj
+            const { _id,userId, amount, description, category } = obj
             const list = document.getElementById('list')
             const newEntry = document.createElement('p'); // Create a new paragraph element
 
@@ -133,9 +133,9 @@
 
             deletebtn.onclick = async () => {
                 try {
-                    const id = obj.id
+                    const id = obj._id
                     console.log(id)
-                    const data = await axios.delete(`http://localhost:3000/deleteexpense/${obj.id}`, {
+                    const data = await axios.delete(`http://localhost:3000/deleteexpense/${obj._id}`, {
                         headers: {
                             "Authorization": token
                         }

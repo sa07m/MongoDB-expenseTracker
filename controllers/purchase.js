@@ -11,16 +11,11 @@ exports.purchasepremium = async (req,res,next)=>{
         })
         const amount = 1000;
 
-        rzp.orders.create({amount , currency: "INR"},(err,order)=>{
-            if(err){
-                throw new Error(JSON.stringify(err));
-            }
-            req.user.createOrder({orderid: order.id , status : 'PENDING'}).then(()=>
-            {
-                return res.status(201).json({order , key_id: rzp.key_id});
-            }
-            ).catch(err=> {throw new Error(err)})
-        })
+        const order = await rzp.orders.create({amount , currency: "INR"})
+        const newOrder = new Order({orderid: order.id , status : 'PENDING'})
+        await newOrder.save()
+        return res.status(201).json({order , key_id: rzp.key_id});
+            
     }catch(err){
         console.log(err);
         res.status(403).json({message: ' something went wrong ' , error : err})
@@ -32,7 +27,7 @@ exports.updateTransaction = async (req,res,next)=>{
     try{
         const { payment_id , order_id} =req.body ;
         const id = req.user.id ;
-        const order =await Order.findOne({where : { orderid : order_id }})
+        const order =await Order.findOne({ orderid : order_id })
         const promise1 = order.update({paymentid : payment_id , status : 'SUCCESSFUL' });
         const promise2 = req.user.update({ispremiumuser : true});
         const token =  await jwt.sign({ id: id , ispremiumuser : true }, process.env.TOKEN_SECRET);        

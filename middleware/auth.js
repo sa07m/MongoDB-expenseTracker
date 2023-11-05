@@ -9,7 +9,7 @@ exports.authenticate = (req,res,next)=>{
         const user = jwt.verify(token ,process.env.TOKEN_SECRET );
         const userid = user.id;
         console.log('user id : ', userid);
-        User.findByPk(userid).then(
+        User.findById(userid).then(
             user=>{
 
                 // console.log('user verified' , JSON.stringify(user));

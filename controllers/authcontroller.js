@@ -63,7 +63,7 @@ exports.login = async (req,res,next)=>{
                 }
             })
         }else{
-            console.log('users' , users);
+            console.log('users' , user);
             res.status(404).json({msg : "user not found"});
         }
 

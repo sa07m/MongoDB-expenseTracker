@@ -24,11 +24,12 @@ exports.forgot = (req,res,next)=>{
 exports.forgotpassword = async (req,res,next)=>{
     try{
         const email =  req.body.email;
-        const users = await User.findAll({where: {email:email}});
-        if(users[0]){
+        const user = await User.findOne({email});
+        if(user){
             const uuid = uuidv4();
-            await ForGotPassword.create({ uuid : uuid , userId : users[0].id })
-            const recievers = [{email:email}]
+            const forgotpasswordrequest = await new ForGotPassword({ uuid : uuid , userId : user.id , isActive:true})
+            forgotpasswordrequest.save();
+            const recievers = [{email}]
             await tranEmailApi.sendTransacEmail({sender , to : recievers , subject : 'link to reset password' , 
                                             textContent : `http://localhost:3000/password/resetpassword/{{params.uuid}}` ,
                                             params :{uuid : uuid} })
@@ -50,9 +51,12 @@ exports.forgotpassword = async (req,res,next)=>{
 exports.resetpassword = async(req,res,next)=>{
     try{
     const uuid = req.params.uuid ;
-    const  forgotpasswords = await ForGotPassword.findAll({where :{ uuid : uuid , isActive : true}});
-    if(forgotpasswords[0]){
-        forgotpasswords[0].update({isActive:false})
+    console.log('uuid hai', uuid)
+    const  forgotpassword = await ForGotPassword.findOne({ uuid : uuid , isActive : true});
+    console.log('fogot psswd hsi', forgotpassword)
+    if(forgotpassword){
+        const updatedforgotpassword = await forgotpassword.updateOne({isActive:false})
+        console.log('fogot psswd jo  hsi', forgotpassword)
         res.sendFile(path.join(__dirname,  '../FrontEnd/resetpassword.html'));
     }else{
         res.status(400).json({message : 'invalid request'})
@@ -66,10 +70,10 @@ exports.resetpassword = async(req,res,next)=>{
 exports.updatepassword = async(req,res,next)=>{
     try{
         const {email , password } = req.body ;
-        const users = await User.findAll({where: {email:email}});
-        if(users[0]){
+        const user = await User.findOne({email});
+        if(user){
             bcrypt.hash(password , 10 , async ( err , hash)=>{
-                await users[0].update({password: hash});
+                await user.updateOne({password: hash});
                 console.log('sending update')
                 res.status(201).json({message : 'password changed  successfully'})
             })

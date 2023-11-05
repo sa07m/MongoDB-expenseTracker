@@ -27,7 +27,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const ForgotpasswordSchema = new Schema({
-  _id: {
+  uuid: {
     type: String,  // change data type to String
     required: true,
   },
@@ -36,10 +36,7 @@ const ForgotpasswordSchema = new Schema({
     type: Boolean,
     required: true
   },
-  expiresby: {
-    type: Date,
-
-  },
+  
   UserId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
 
 })

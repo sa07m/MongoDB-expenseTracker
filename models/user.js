@@ -38,7 +38,7 @@ const userSchema = new Schema({
 
     totalexpenses: {
         type: Number,
-        //default:0
+        default:0
     }
 
 })
