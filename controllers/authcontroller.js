@@ -17,13 +17,14 @@ exports.signup = async (req,res,next)=>{
         if(name.length === 0 || name  == null || password == null || email == null || email.length === 0 || password.length === 0){
             res.status(400).json({err : "bad  parameters"})
         }
-        const users = await User.findAll({where: {email:email}});
-        if(users[0]){
+        const user = await User.findOne({email});
+        if(user){
                 res.status(403).json({"failed" : "user exists",error:'user exists'})
         }else{
                 console.log('>> in else')
                 bcrypt.hash(password , 10 , async ( err , hash)=>{
-                    await User.create({name:name , email : email , password : hash})
+                    const data = await new User({name:name , email : email , password : hash})
+                    data.save()
                     res.status(201).json({message : 'signed up successfully'})
                 })
                 
@@ -38,20 +39,23 @@ exports.signup = async (req,res,next)=>{
 
 exports.login = async (req,res,next)=>{
     try{
-        const {name,email,password} = req.body ;
+        const {email,password} = req.body ;
         if( password == null || email == null || email.length === 0 || password.length === 0){
             res.status(400).json({err : "bad  parameters"})
         }
-        const users = await User.findAll({where: {email:email }});
+        const user = await User.find({email});
         
-        if(users[0]){
-            const user = users[0];
-            bcrypt.compare(password,user.dataValues.password , async  (err, response )=>{
-                if(response == true){
-                    const token =  await jwt.sign({ id: user.dataValues.id , ispremiumuser : user.dataValues.ispremiumuser }, process.env.TOKEN_SECRET);
+        if(user){
+             //const user = user[0];
+             console.log(user[0].password)
+             console.log(password)
+            bcrypt.compare(password,user[0].password , async  (err, response )=>{
+                if(response){
+                    console.log('in if')
+                    const token =  await jwt.sign({ id: user[0].id , ispremiumuser : user[0].ispremiumuser }, process.env.TOKEN_SECRET);
                     res.status(200).json({
                         message: 'Login successful',
-                        user: { username: req.body.username  },
+                        user: { username: req.body.name  },
                         token : token
                      });
                 }else{
