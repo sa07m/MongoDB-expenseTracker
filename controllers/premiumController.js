@@ -23,12 +23,10 @@ exports.download = async (req, res, next) => {
     try {
         const userid = req.user.id;
 
-        // Use Mongoose to get the expenses for the user
         const expenses = await Expense.find({ userId: userid });
 
         const stringifiedExpenses = JSON.stringify(expenses);
 
-        // Create a unique filename for the text file based on the user's ID and the current date.
         const filename = `Expenses${userid}/${new Date()}.txt`;
 
         // Upload the stringified expenses to an S3 storage service and get the file URL.

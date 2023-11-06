@@ -5,10 +5,10 @@ const jwt = require('jsonwebtoken');
 
 
 exports.loginpage = (req, res, next) => {
-    res.sendFile(path.join(__dirname, '../FrontEnd/login.html'));
+    res.sendFile(path.join(__dirname, '../frontEnd/login.html'));
 }
 exports.home = (req, res, next) => {
-    res.sendFile(path.join(__dirname, '../FrontEnd/signup.html'));
+    res.sendFile(path.join(__dirname, '../frontEnd/signup.html'));
 }
 exports.signup = async (req, res, next) => {
     console.log(req.body)

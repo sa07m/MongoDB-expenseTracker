@@ -18,7 +18,7 @@ const path = require('path');
 
 
 exports.forgot = (req, res, next) => {
-    res.sendFile(path.join(__dirname, '../FrontEnd/forgotpassword.html'));
+    res.sendFile(path.join(__dirname, '../frontEnd/forgotpassword.html'));
 }
 
 exports.forgotpassword = async (req, res, next) => {
@@ -59,7 +59,7 @@ exports.resetpassword = async (req, res, next) => {
         if (forgotpassword) {
             const updatedforgotpassword = await forgotpassword.updateOne({ isActive: false })
             console.log('fogot psswd jo  hsi', forgotpassword)
-            res.sendFile(path.join(__dirname, '../FrontEnd/resetpassword.html'));
+            res.sendFile(path.join(__dirname, '../frontEnd/resetpassword.html'));
         } else {
             res.status(400).json({ message: 'invalid request' })
         }
@@ -89,5 +89,5 @@ exports.updatepassword = async (req, res, next) => {
 }
 
 exports.loginpage = (req, res) => {
-    res.sendFile(path.join(__dirname, '../FrontEnd/resetpassword.html'))
+    res.sendFile(path.join(__dirname, '../frontEnd/resetpassword.html'))
 }
