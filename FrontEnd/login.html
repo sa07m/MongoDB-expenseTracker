@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
+
 <body>
     <form onsubmit="login(event)">
         <label for="email">Enter Email</label>
@@ -12,29 +14,30 @@
         <label for="password">Enter password</label>
         <input type="password" id="password" name="password" required>
         <button type="submit">Login</button><br>
-        <a href="/" >New User - SignUp</a>
+        <a href="/">New User - SignUp</a>
     </form>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.5.1/axios.min.js"></script>
     <script>
-        async function login(event){
+        async function login(event) {
             event.preventDefault()
             const obj = {
-                email : document.getElementById('email').value,
-                password : document.getElementById('password').value
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value
             }
-                        
-            await axios.post('http://localhost:3000/login',obj)
-                .then(result=>{
+
+            await axios.post('http://localhost:3000/login', obj)
+                .then(result => {
                     alert(result.data.message)
                     localStorage.setItem('token', result.data.token)
-                    window.location.href='/app'
+                    window.location.href = '/app'
                 })
-                .catch(err=>{
+                .catch(err => {
                     console.log(JSON.stringify(err))
                     document.body.innerHTML += `<div style="color:red;">${err.message} </div>`
-                
+
                 })
         }
     </script>
 </body>
+
 </html>

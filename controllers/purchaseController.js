@@ -1,27 +1,27 @@
-const razorpay =require('razorpay');
-const Order = require('../models/orders');
-const User = require('../models/user');
+const razorpay = require('razorpay');
+const Order = require('../models/orderModel');
+const User = require('../models/userModel');
 const jwt = require('jsonwebtoken')
 
-exports.purchasepremium = async (req,res,next)=>{
-    try{
-        // console.log('key id : -- ',process.env.RAZORPAY_KEY_ID)
-        var rzp = new razorpay({
-            key_id: process.env.RAZORPAY_KEY_ID ,
-            key_secret: process.env.RAZORPAY_KEY_SECRET
-        })
-        const amount = 1000;
+exports.purchasepremium = async (req, res, next) => {
+  try {
+    // console.log('key id : -- ',process.env.RAZORPAY_KEY_ID)
+    var rzp = new razorpay({
+      key_id: process.env.RAZORPAY_KEY_ID,
+      key_secret: process.env.RAZORPAY_KEY_SECRET
+    })
+    const amount = 1000;
 
-        const order = await rzp.orders.create({amount , currency: "INR"})
-        const newOrder = new Order({orderid: order.id , status : 'PENDING'})
-        await newOrder.save()
-        return res.status(201).json({order , key_id: rzp.key_id});
-            
-    }catch(err){
-        console.log(err);
-        res.status(403).json({message: ' something went wrong ' , error : err})
+    const order = await rzp.orders.create({ amount, currency: "INR" })
+    const newOrder = new Order({ orderid: order.id, status: 'PENDING' })
+    await newOrder.save()
+    return res.status(201).json({ order, key_id: rzp.key_id });
 
-    }
+  } catch (err) {
+    console.log(err);
+    res.status(403).json({ message: ' something went wrong ', error: err })
+
+  }
 }
 
 // exports.updateTransaction = async (req,res,next)=>{
@@ -55,12 +55,12 @@ exports.purchasepremium = async (req,res,next)=>{
 //     }
 // }
 
-function generateToken(id, ispremiumuser){
-    return jwt.sign({id, ispremiumuser}, process.env.TOKEN_SECRET)
+function generateToken(id, ispremiumuser) {
+  return jwt.sign({ id, ispremiumuser }, process.env.TOKEN_SECRET)
 }
 
 exports.updatetransactionstatus = async (req, res, next) => {
-try {
+  try {
     // storing the id from user table
     const userId = req.user._id;
     // taking the details of payment id and order id

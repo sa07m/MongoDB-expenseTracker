@@ -1,0 +1,23 @@
+- my-expense-tracker
+  - app.js
+  - public
+    - css/
+    - js/
+    - images/
+  - routes
+    - authRoutes.js
+    - expenseRoutes.js
+    - premiumRoutes.js
+  - controllers
+    - authController.js
+    - expenseController.js
+    - premiumController.js
+  - models
+    - userModel.js
+    - expenseModel.js
+    - forgotPasswordModel.js
+  - views
+    - index.html
+    - login.html
+    - expense.html
+    - premium.html

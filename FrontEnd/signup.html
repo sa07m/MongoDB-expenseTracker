@@ -1,26 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
+
 <body>
     <form onsubmit="submitFunction(event)">
-        <label for="name">Enter your name</label> 
+        <label for="name">Enter your name</label>
         <input type="text" id="name" name="name" required>
-        <label for="email">Enter email</label> 
+        <label for="email">Enter email</label>
         <input type="email" id="email" name="email" required>
         <label for="password">Enter password</label>
         <input type="password" id="password" name="password" required>
         <button type="submit" id="submit">Sign up</button><br>
-        
+
     </form>
-    <button  id="forgotbtn" >Forgot Password</button>
-        <a href="/loginpage" >Existing User - Login</a>
+    <button id="forgotbtn">Forgot Password</button>
+    <a href="/loginpage">Existing User - Login</a>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.5.1/axios.min.js"></script>
     <script>
-        async function submitFunction(event){
+        async function submitFunction(event) {
             event.preventDefault()
             console.log('in submit function')
             const name = document.getElementById('name').value
@@ -32,15 +34,15 @@
                 email,
                 password
             }
-            try{
+            try {
                 const data = await axios.post('http://localhost:3000/signup', obj)
-                if(data.status===201){
+                if (data.status === 201) {
                     alert('User created successfully')
                     window.location.href = '/loginpage'
                 }
             }
-            catch(error){
-                if(error.response.status===403){
+            catch (error) {
+                if (error.response.status === 403) {
                     const errorMessage = error.response.data.error
                     document.body.innerHTML += `<div style="color:red;">${errorMessage} </div>`
                 }
@@ -56,10 +58,11 @@
         }
         document.getElementById('forgotbtn').addEventListener('click', async function (event) {
             event.preventDefault();
-            window.location.href='/forgotpassword';  
+            window.location.href = '/forgotpassword';
         });
 
 
     </script>
 </body>
+
 </html>
